@@ -1,1 +1,7 @@
-#! /user/bin/env bash
+#! /usr/bin/env bash
+DL_DIR="$HOME/Downloads"
+while read -r file; do
+    echo "Ny fil: $file"
+done < <(inotifywait -m -e close_write -e moved_to --format '%f' "$DL_DIR")
+
+
