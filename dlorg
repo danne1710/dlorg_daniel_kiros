@@ -3,5 +3,12 @@ DL_DIR="$HOME/Downloads"
 while read -r file; do
     echo "Ny fil: $file"
 done < <(inotifywait -m -e close_write -e moved_to --format '%f' "$DL_DIR")
-
-
+if [[ ! -f " $DL_DIR/$file" ]]; then
+    continue 
+fi
+declare -A DEST=(
+    [jpg]=images [jpeg]=images [png]=images [gif]=images
+    [pdf]=pds [mp4]=video [mp3=audio]=audio
+    [txt]=text
+)
+dest="${DEST[$ext]:-other}"
