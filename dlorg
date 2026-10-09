@@ -1,14 +1,18 @@
 #! /usr/bin/env bash
 DL_DIR="$HOME/Downloads"
-while read -r file; do
-    echo "Ny fil: $file"
-done < <(inotifywait -m -e close_write -e moved_to --format '%f' "$DL_DIR")
-if [[ ! -f " $DL_DIR/$file" ]]; then
-    continue 
-fi
 declare -A DEST=(
     [jpg]=images [jpeg]=images [png]=images [gif]=images
-    [pdf]=pds [mp4]=video [mp3=audio]=audio
-    [txt]=text
+    [pdf]=pdfs [mp4]=video [mp3]=audio
+    [txt]=txt
 )
-dest="${DEST[$ext]:-other}"
+while read -r file; do
+    if [[ ! -f "$DL_DIR/$file" ]]; then
+        continue
+    fi
+     ext="${file##*.}"
+     ext="${ext,,}"
+     dest="${DEST[$ext]:-other}"
+     mkdir -p "$DL_DIR/$dest"
+     mv -n "$DL_DIR/$file" "$DL_DIR/$dest/"
+     echo "Flyttade $file till $dest/"
+done < <(inotifywait -m -e close_write -e moved_to --format '%f' "$DL_DIR")
